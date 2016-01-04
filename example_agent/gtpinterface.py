@@ -10,7 +10,7 @@ class gtpinterface:
 	The interface contains an agent which decides which moves to make on request
 	along with a gamestate which holds the current state of the game.
 	"""
-	def __init__(self):
+	def __init__(self, agent):
 		"""
 		Initilize the list of available commands, binding appropriate names to the
 		funcitons defined in this file.
@@ -35,8 +35,10 @@ class gtpinterface:
 		commands["valid"] = self.gtp_valid
 		self.commands = commands
 		self.game = gamestate(8)
+		self.agent = agent
 		self.agent.set_gamestate(self.game)
 		self.move_time = 10
+		self.next_move = None
 
 	def send_command(self, command):
 		"""
@@ -199,8 +201,7 @@ class gtpinterface:
 
 		if(move == gamestate.GAMEOVER):
 			return (False, "The game is already over")
-		self.game.play(move)
-		self.agent.move(move)
+		self.next_move = move
 		return (True, chr(ord('a')+move[0])+str(move[1]+1))
 
 	def gtp_time(self, args):
@@ -238,14 +239,30 @@ class gtpinterface:
 	def gtp_occupied(self, args):
 		"""
 		Inform player that the last played cell was already occupied.
-		TODO: implement"""
-		pass
+		"""
+		opponent = self.game.OPPONENT[self.game.turn()]
+		if(opponent == self.game.PLAYERS["white"]):
+			try:
+				self.game.place_white(self.next_move)
+			except ValueError:
+				return (False, "Known occupied cell")
+			return (True,"")
+		else:
+			try:
+				self.game.place_black(self.next_move)
+			except ValueError:
+				return (False, "Known occupied cell")
+			return (True,"")
+
+
 
 	def gtp_valid(self, args):
 		"""
 		Inform player that the last played cell was a valid move.
 		TODO: implement"""
-		pass
+		self.game.play(self.next_move)
+		self.agent.move(self.next_move)
+		return (True, "")
 
 
 

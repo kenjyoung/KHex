@@ -35,6 +35,7 @@ blackAgent.sendCommand("set_time "+str(time))
 whiteAgent.sendCommand("set_time "+str(time))
 
 game = gamestate(boardsize)
+#TODO: implement time control
 while(True):
 	while(True):
 		move = blackAgent.sendCommand("genmove black")
