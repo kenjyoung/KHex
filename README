@@ -1,0 +1,1 @@
+Server for playing Kriegspiel Hex. Kriegspiel Hex is a hex variant where the opponents moves are invisible unless we try to play a move in the same cell. Players are alerted of invalid moves and may continue playing moves until they pick a valid one.
