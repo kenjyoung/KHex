@@ -1,0 +1,4 @@
+-Need server which both players can communicate with but which limits information available to each player
+-will use gtp but may have to modify:
+	-genmove may return a move but then program must be notified of failure
+	-need 2 way communication between program and server
