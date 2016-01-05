@@ -28,6 +28,8 @@ class gamestate:
 		self.size = size
 		self.toplay = self.PLAYERS["black"]
 		self.board = np.zeros((size, size))
+		self.white_groups = unionfind()
+		self.black_groups = unionfind()
 
 	def play(self, cell):
 		"""
@@ -113,7 +115,7 @@ class gamestate:
 			if (0<=n[0]+x and n[0]+x<self.size and 0<=n[1]+y and n[1]+y<self.size)]
 
 	def cell_color(self, cell):
-		return board[cell]
+		return self.board[cell]
 
 	def moves(self):
 		"""

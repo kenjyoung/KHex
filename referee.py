@@ -5,9 +5,7 @@ from gamestate import gamestate
 
 def move_to_cell(move):
 	x =	ord(move[0].lower())-ord('a')
-	y = int(move[1][1:])-1
-	if(x<0 or y<0 or x>=self.game.size or y>=self.game.size):
-		raise ValueError("Cell out of bounds")
+	y = int(move[1:])-1
 	return (x,y)
 
 parser = argparse.ArgumentParser(description="Referee a game of Kriegspiel Hex between two executable agents.")
@@ -50,7 +48,7 @@ while(True):
 	while(True):
 		move = whiteAgent.sendCommand("genmove white")
 		if(game.cell_color(move_to_cell(move))==game.PLAYERS["none"]):
-			blackAgent.sendCommand("valid")
+			whiteAgent.sendCommand("valid")
 			game.play(move_to_cell(move))
 			break
 		else:

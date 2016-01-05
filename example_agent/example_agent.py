@@ -1,3 +1,6 @@
+import sys, os
+sys.path.append(os.path.dirname(__file__)+"/../")
+from gamestate import gamestate
 from gamestate import gamestate
 import time
 import random

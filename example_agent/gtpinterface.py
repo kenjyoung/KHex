@@ -1,4 +1,5 @@
-import sys
+import sys, os
+sys.path.append(os.path.dirname(__file__)+"/../")
 from gamestate import gamestate
 version = 0.1
 protocol_version = 2
@@ -246,12 +247,14 @@ class gtpinterface:
 				self.game.place_white(self.next_move)
 			except ValueError:
 				return (False, "Known occupied cell")
+			self.agent.set_gamestate(self.game)
 			return (True,"")
 		else:
 			try:
 				self.game.place_black(self.next_move)
 			except ValueError:
 				return (False, "Known occupied cell")
+			self.agent.set_gamestate(self.game)
 			return (True,"")
 
 
