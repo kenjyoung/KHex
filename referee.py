@@ -52,6 +52,8 @@ while(True):
 			game.play(move_to_cell(move))
 			break
 		else:
-			blackAgent.sendCommand("occupied")
+			whiteAgent.sendCommand("occupied")
+	if(game.winner() != game.PLAYERS["none"]):
+		break
 
 
