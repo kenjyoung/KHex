@@ -1,7 +1,29 @@
 from program import Program
 import sys
 import argparse
+import threading
+import time
 from gamestate import gamestate
+
+def make_valid_move(game, agent, color):
+	move = agent.sendCommand("genmove "+color)
+	while(True):
+		if(game.cell_color(move_to_cell(move))==game.PLAYERS["none"]):
+			agent.sendCommand("valid")
+			game.play(move_to_cell(move))
+			break
+		else:
+			move = agent.sendCommand("occupied")
+
+class moveThread(threading.Thread):
+	def __init__(self, game, agent, color):
+		threading.Thread.__init__(self)
+		self.game = game
+		self.agent = agent
+		self.color = color
+	def run(self):
+		make_valid_move(self.game, self.agent, self.color)
+
 
 def move_to_cell(move):
 	x =	ord(move[0].lower())-ord('a')
@@ -33,27 +55,32 @@ blackAgent.sendCommand("set_time "+str(time))
 whiteAgent.sendCommand("set_time "+str(time))
 
 game = gamestate(boardsize)
-#TODO: implement time control
+winner = None
+timeout = False
 while(True):
-	move = blackAgent.sendCommand("genmove black")
-	while(True):
-		if(game.cell_color(move_to_cell(move))==game.PLAYERS["none"]):
-			blackAgent.sendCommand("valid")
-			game.play(move_to_cell(move))
-			break
-		else:
-			move = blackAgent.sendCommand("occupied")
-	if(game.winner() != game.PLAYERS["none"]):
+	t = moveThread(game, blackAgent, "black")
+	t.start()
+	t.join(time+0.5)
+	#if black times out white wins
+	if(t.isAlive()):
+		timeout = True
+		winner = game.PLAYERS["white"]
 		break
-	move = whiteAgent.sendCommand("genmove white")
-	while(True):
-		if(game.cell_color(move_to_cell(move))==game.PLAYERS["none"]):
-			whiteAgent.sendCommand("valid")
-			game.play(move_to_cell(move))
-			break
-		else:
-			move = whiteAgent.sendCommand("occupied")
 	if(game.winner() != game.PLAYERS["none"]):
+		winner = game.winner()
 		break
+	t = moveThread(game, whiteAgent, "white")
+	t.start()
+	t.join(time+0.5)
+	#if white times out black wins
+	if(t.isAlive()):
+		timeout = True
+		winner = game.PLAYERS["black"]
+		break
+	if(game.winner() != game.PLAYERS["none"]):
+		winner = game.winner()
+		break
+
+print("player "+str(winner)+" wins" + " by timeout." if timeout else ".")
 
 

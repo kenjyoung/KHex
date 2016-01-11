@@ -196,7 +196,6 @@ class gtpinterface:
 					self.agent.set_gamestate(self.game)
 			else:
 				return (False, "Player not recognized")
-
 		self.agent.search(self.move_time)
 		move = self.agent.best_move()
 
