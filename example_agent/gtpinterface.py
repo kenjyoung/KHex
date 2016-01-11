@@ -248,14 +248,15 @@ class gtpinterface:
 			except ValueError:
 				return (False, "Known occupied cell")
 			self.agent.set_gamestate(self.game)
-			return (True,"")
+			return self.gtp_genmove('b')
 		else:
 			try:
 				self.game.place_black(self.next_move)
 			except ValueError:
 				return (False, "Known occupied cell")
 			self.agent.set_gamestate(self.game)
-			return (True,"")
+			#if our attempted move is occupied we must pick another
+			return self.gtp_genmove('w')
 
 
 

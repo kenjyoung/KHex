@@ -35,24 +35,24 @@ whiteAgent.sendCommand("set_time "+str(time))
 game = gamestate(boardsize)
 #TODO: implement time control
 while(True):
+	move = blackAgent.sendCommand("genmove black")
 	while(True):
-		move = blackAgent.sendCommand("genmove black")
 		if(game.cell_color(move_to_cell(move))==game.PLAYERS["none"]):
 			blackAgent.sendCommand("valid")
 			game.play(move_to_cell(move))
 			break
 		else:
-			blackAgent.sendCommand("occupied")
+			move = blackAgent.sendCommand("occupied")
 	if(game.winner() != game.PLAYERS["none"]):
 		break
+	move = whiteAgent.sendCommand("genmove white")
 	while(True):
-		move = whiteAgent.sendCommand("genmove white")
 		if(game.cell_color(move_to_cell(move))==game.PLAYERS["none"]):
 			whiteAgent.sendCommand("valid")
 			game.play(move_to_cell(move))
 			break
 		else:
-			whiteAgent.sendCommand("occupied")
+			move = whiteAgent.sendCommand("occupied")
 	if(game.winner() != game.PLAYERS["none"]):
 		break
 
