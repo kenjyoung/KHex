@@ -9,6 +9,7 @@ class gamestate:
 	"""
 	#dictionary associating numbers with players for book keeping
 	PLAYERS = {"none" : 0, "white" : 1, "black" : 2}
+	PLAYER_STR = {0 : "none", 1 : "white", 2: "black"}
 	OPPONENT ={0 : 0, 1 : 2, 2 : 1}
 
 	#move value of -1 indicates the game has ended so no move is possible

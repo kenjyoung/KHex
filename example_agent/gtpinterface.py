@@ -40,6 +40,7 @@ class gtpinterface:
 		self.agent.set_gamestate(self.game)
 		self.move_time = 10
 		self.next_move = None
+		self.moveslist = None
 
 	def send_command(self, command):
 		"""
@@ -197,12 +198,11 @@ class gtpinterface:
 			else:
 				return (False, "Player not recognized")
 		self.agent.search(self.move_time)
-		move = self.agent.best_move()
-
-		if(move == gamestate.GAMEOVER):
+		self.moveslist = self.agent.sorted_moves()
+		if(self.moveslist == gamestate.GAMEOVER):
 			return (False, "The game is already over")
-		self.next_move = move
-		return (True, chr(ord('a')+move[0])+str(move[1]+1))
+		self.next_move = self.moveslist.pop()
+		return (True, chr(ord('a')+self.next_move[0])+str(self.next_move[1]+1))
 
 	def gtp_time(self, args):
 		"""
@@ -247,7 +247,9 @@ class gtpinterface:
 			except ValueError:
 				return (False, "Known occupied cell")
 			self.agent.set_gamestate(self.game)
-			return self.gtp_genmove('b')
+			#if our attempted move is occupied we must pick another
+			self.next_move = self.moveslist.pop()
+			return (True, chr(ord('a')+self.next_move[0])+str(self.next_move[1]+1))
 		else:
 			try:
 				self.game.place_black(self.next_move)
@@ -255,7 +257,8 @@ class gtpinterface:
 				return (False, "Known occupied cell")
 			self.agent.set_gamestate(self.game)
 			#if our attempted move is occupied we must pick another
-			return self.gtp_genmove('w')
+			self.next_move = self.moveslist.pop()
+			return (True, chr(ord('a')+self.next_move[0])+str(self.next_move[1]+1))
 
 
 
@@ -265,6 +268,8 @@ class gtpinterface:
 		TODO: implement"""
 		self.game.play(self.next_move)
 		self.agent.move(self.next_move)
+		self.next_move = None
+		self.moveslist = None
 		return (True, "")
 
 

@@ -84,6 +84,16 @@ class mctsagent:
 		bestchild = random.choice(max_nodes)
 		return bestchild.move
 
+	def sorted_moves(self):
+		"""
+		Return a list of all moves sorted by quality.
+		"""
+		if(self.rootstate.winner() != gamestate.PLAYERS["none"]):
+			return gamestate.GAMEOVER
+		moveslist = copy(self.root.children)
+		moveslist.sort(key = lambda n: n.N)
+		return [child.move for child in moveslist]
+
 	def move(self, move):
 		"""
 		Make the passed move and update the tree approriately.
