@@ -260,8 +260,6 @@ class gtpinterface:
 			self.next_move = self.moveslist.pop()
 			return (True, chr(ord('a')+self.next_move[0])+str(self.next_move[1]+1))
 
-
-
 	def gtp_valid(self, args):
 		"""
 		Inform player that the last played cell was a valid move.
