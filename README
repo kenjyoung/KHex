@@ -10,7 +10,7 @@ player1 and player2 must be two programs able to communicate with the server thr
 
 -t of --time specifies the time available for each player to make each move. Note that only successful moves (i.e. which do not intersect with a played opponent stone) will be counted so care must be taken to avoid timeout in the case of moves to occupied cells. Currently any timeout will result in a win for the other player.
 
-The file example_agent contains an implementation of an agent capable of playing a game using this server. This agent is simply a monte carlo tree search agent for playing ordinary hex which is not even aware it is actually playing KHex (failed moves result in reset of tree to add in the now known opponent cell location). This agent is meant to be a minimal demostration of a functioning player only and does not represent a recomended strategy. example_agent/example_program.py is the program to run associated with this agent, for example:
+The file example_agent contains an implementation of an agent capable of playing a game using this server. This agent is simply a monte carlo tree search agent for playing ordinary hex which is not even aware it is actually playing KHex (failed moves result in reset of tree to add in the now known opponent cell location). This agent is meant to be a minimal demonstration of a functioning player only and does not represent a recommended strategy. example_agent/example_program.py is the program to run associated with this agent, for example:
 
 python3 referee.py example_agent/example_program.py example_agent/example_program.py -b 3 -t 1
 
@@ -24,11 +24,11 @@ genmove <white/black>: respond with a move for the passed player (e.g. g5)
 occupied: indicates that the last move returned by genmove is already occupied, respond with another move
 valid: indicates that the last move returned by genmove was valid and has been played
 
-Succesful responses should be formated as follows:
+Successful responses should be formatted as follows:
 
 =<response>\n
 
-Errenous responses (e.g. boardsize called with 0 argument ect.) should be formated as follows:
+Erroneous responses (e.g. boardsize called with 0 argument ect.) should be formatted as follows:
 
 ?<response>\n
 
