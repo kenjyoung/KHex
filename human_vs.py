@@ -87,7 +87,7 @@ while(True):
 			break
 
 
-print("Game over." + game.PLAYER_STR[winner]+" wins.")
+print("Game over, " + game.PLAYER_STR[winner]+" wins.")
 print(game)
 
 

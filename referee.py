@@ -81,7 +81,7 @@ while(True):
 		winner = game.winner()
 		break
 
-print("Game over." + game.PLAYER_STR[winner] + " wins" + (" by timeout." if timeout else "."))
+print("Game over, " + game.PLAYER_STR[winner] + " wins" + (" by timeout." if timeout else "."))
 print(game)
 
 
