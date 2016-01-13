@@ -43,6 +43,19 @@ class gamestate:
 			self.place_black(cell)
 			self.toplay = self.PLAYERS["white"]
 
+	def place(self, color, cell):
+		"""
+		Place a stone of the given color regardless of whose turn it is
+		"""
+		if(color == self.PLAYERS["white"]):
+			self.place_white(cell)
+		elif(color == self.PLAYERS["black"]):
+			self.place_black(cell)
+		else:
+			raise ValueError("Unrecognized color")
+
+
+
 	def place_white(self, cell):
 		"""
 		Place a white stone regardless of whose turn it is.

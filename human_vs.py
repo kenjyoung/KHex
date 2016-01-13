@@ -14,10 +14,11 @@ def make_valid_move(game, agent, color):
 			break
 		else:
 			move = agent.sendCommand("occupied")
-def get_human_move(game, human_game):
-	move = input("Please type a move:")
+def get_human_move(game, human_game, color):
+	human_game.set_turn(game.PLAYERS[color])
 	while(True):
 		print(human_game)
+		move = input("Please type a move:")
 		if(game.cell_color(move_to_cell(move))==game.PLAYERS["none"]):
 			print("valid (move was played)")
 			game.play(move_to_cell(move))
@@ -25,11 +26,9 @@ def get_human_move(game, human_game):
 			break
 		else:
 			print("cell occupied (try another move)")
-			opponent = self.game.OPPONENT[self.game.turn()]
-			if(opponent == self.game.PLAYERS["white"]):
-				try: human_game.place_white(move)
-			else:
-				try: human_game.place_black(move)
+			opponent = game.OPPONENT[game.turn()]
+			human_game.place(opponent, move_to_cell(move))
+			
 
 def move_to_cell(move):
 	x =	ord(move[0].lower())-ord('a')
@@ -38,7 +37,6 @@ def move_to_cell(move):
 
 parser = argparse.ArgumentParser(description="Referee a game of Kriegspiel Hex between a human and an executable agent")
 parser.add_argument("program", type=str, help="executable")
-parser.add_argument("humanColor", type=str, help="specifies whether human player plays 1st (b/black) or 2nd (w/white)")
 parser.add_argument("--first", "-f", dest="first", action='store_const',
 					const=True, default=False,
 					help="human plays first (if not present default to second)")
@@ -66,18 +64,30 @@ winner = None
 
 while(True):
 	if(args.first):
-		get_human_move(game, "black")
+		get_human_move(game, human_game, "black")
+		if(game.winner() != game.PLAYERS["none"]):
+			winner = game.winner()
+			break
 		print("waiting for opponent...")
 		make_valid_move(game, agent, "white")
 		print("done")
+		if(game.winner() != game.PLAYERS["none"]):
+			winner = game.winner()
+			break
 	else:
 		print("waiting for opponent...")
-		make_valid_move(game, agent, "white")
+		make_valid_move(game, agent, "black")
 		print("done")
-		get_human_move(game, "black")
-	
+		if(game.winner() != game.PLAYERS["none"]):
+			winner = game.winner()
+			break
+		get_human_move(game, human_game, "white")
+		if(game.winner() != game.PLAYERS["none"]):
+			winner = game.winner()
+			break
 
-print(game.PLAYER_STR[winner]+" wins."
+
+print("Game over." + game.PLAYER_STR[winner]+" wins.")
 print(game)
 
 

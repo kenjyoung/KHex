@@ -241,29 +241,19 @@ class gtpinterface:
 		Inform player that the last played cell was already occupied.
 		"""
 		opponent = self.game.OPPONENT[self.game.turn()]
-		if(opponent == self.game.PLAYERS["white"]):
-			try:
-				self.game.place_white(self.next_move)
-			except ValueError:
-				return (False, "Known occupied cell")
-			self.agent.set_gamestate(self.game)
-			#if our attempted move is occupied we must pick another
-			self.next_move = self.moveslist.pop()
-			return (True, chr(ord('a')+self.next_move[0])+str(self.next_move[1]+1))
-		else:
-			try:
-				self.game.place_black(self.next_move)
-			except ValueError:
-				return (False, "Known occupied cell")
-			self.agent.set_gamestate(self.game)
-			#if our attempted move is occupied we must pick another
-			self.next_move = self.moveslist.pop()
-			return (True, chr(ord('a')+self.next_move[0])+str(self.next_move[1]+1))
+		try:
+			self.game.place(opponent, self.next_move)
+		except ValueError:
+			return (False, "Known occupied cell")
+		self.agent.set_gamestate(self.game)
+		#if our attempted move is occupied we must pick another
+		self.next_move = self.moveslist.pop()
+		return (True, chr(ord('a')+self.next_move[0])+str(self.next_move[1]+1))
 
 	def gtp_valid(self, args):
 		"""
 		Inform player that the last played cell was a valid move.
-		TODO: implement"""
+		"""
 		self.game.play(self.next_move)
 		self.agent.move(self.next_move)
 		self.next_move = None
