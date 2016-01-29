@@ -26,7 +26,7 @@ class web_agent:
 			totalsent += sent
 		chunks = []
         bytes_recd = 0
-        while 1:
+        while True:
             chunk = self.client.recv(2048)
             if chunk == '':
                 raise RuntimeError("client disconnected")
@@ -92,6 +92,52 @@ def run_game(blackAgent, whiteAgent, boardsize, time):
 	print(game)
 	return winner
 
+class win_stats:
+	def __init__(self, clients):
+		self.stats = {}
+		for client_1 in clients:
+		for client_2 in clients:
+			if(client_1!=client_2):
+				if !self.stats[client_1.name]:
+					self.stats[client_1.name] = {}
+				self.stats[client_1.name][client_2.name] = (0,0)
+
+	def print_stats(self):
+		agents = self.stats.keys()
+		entry_size = max(max([len(x) for x in agents]),8)
+		print " "*entry_size
+		for agent in agents:
+			print agent+" "*(entry_size-len(agent))
+		for agent1 in agents:
+			print agent1+" "*(entry_size-len(agent))
+			for agent2 in agents:
+				win_lose = self.stats[agent1][agent2]
+				entry = str(win_lose[0])+", "+str(win_lose[1])
+				print entry+" "*(entry_size-len(entry))
+
+	def add_outcome(blackAgent, whiteAgent, winner):
+		if(!(self.stats[blackAgent.name] && self.stats[blackAgent.name][whiteAgent.name])):
+			raise ValueError("Unknown agent.")
+		if(winner == gamestate.PLAYERS["black"]):
+			#increment wins
+			self.stats[blackAgent.name][whiteAgent.name][0]+=1
+		else
+			#increment loses
+			self.stats[blackAgent.name][whiteAgent.name][1]+=1
+
+
+
+def print_stats(win_stats):
+	entry_size = max([len(x) for x in win_stats.keys()])
+	print " "*entry_size
+	for agent in win_stats.keys:
+		print agent+" "
+	for agent1:stats in win_stats:
+		for agent2:entry in stats:
+
+
+
+
 parser = argparse.ArgumentParser(description="Server for running a tournament between several Khex clients.")
 parser.add_argument("num_clients", type=int, help="number of agents in tournament.")
 parser.add_argument("num_games", type=int, help="number of *pairs* of games (one as black, one as white) to play between each pair of agents.")
@@ -128,13 +174,7 @@ while len(clients)<num_clients:
     clients.append(web_agent(clientsocket))
 
 #win_stats[client_1][client_2] = (number of client_1 wins as black against client_2, number of client_1 losses as black against client_2)
-win_stats = {}
-for client_1 in clients:
-		for client_2 in clients:
-			if(client_1!=client_2):
-				if !win_stats[client_1.name]:
-					win_stats[client_1.name] = {}
-				win_stats[client_1.name][client_2.name] = (0,0)
+stats = win_stats(clients)
 
 
 for game in range(num_games):
@@ -142,7 +182,8 @@ for game in range(num_games):
 		for client_2 in clients:
 			if(client_1!=client_2):
 				winner = run_game(client_1, client_2, boardsize, time)
-				if(winner == gamestate.PLAYERS["black"]):
-					win_stats[client_1.name][client_2.name][0]+=1
-				else
-					win_stats[client_1.name][client_2.name][1]+=1
+				win_stats.add_outcome(client_1, client_2, winner)
+				win_stats.print_stats()
+print "Tournament Complete"
+print "Final win statistics:"
+win_stats.print_stats()
