@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/env python3
 from gtpinterface import gtpinterface
 from example_agent import mctsagent
 def main():
