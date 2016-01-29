@@ -23,17 +23,23 @@ s.connect((server_addr, int(server_port)))
 agent = Program(args.program, True)
 
 while(True):
-	chunks = []
-    bytes_recd = 0
-    while True:
-        chunk = s.recv(2048)
-        if chunk == '':
-            raise RuntimeError("Connection to server lost")
-        chunks.append(chunk)
-        if(chunk[-1]!='\n'):
-        	break
-    command = join(chunks)
-    agent.sendCommand(command)
+	command = ''
+	bytes_recd = 0
+	while True:
+	    chunk = s.recv(2048)
+	    if chunk == b'':
+	        raise RuntimeError("Connection to server lost")
+	    command+=chunk.decode('UTF-8')
+	    if(chunk[-1]!='\n'):
+	    	break
+	response = agent.sendCommand(command)
+	totalsent=0
+	while totalsent < len(response):
+		sent = s.send(bytes(response[totalsent:],'UTF-8'))
+		if sent == 0:
+			raise RuntimeError("client disconnected")
+		totalsent += sent
+	bytes_recd = 0
 
 
 
