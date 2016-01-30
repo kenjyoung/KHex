@@ -16,9 +16,10 @@ def make_valid_move(game, agent, color):
 			move = agent.sendCommand("occupied")
 def get_human_move(game, human_game, color):
 	human_game.set_turn(game.PLAYERS[color])
+	color_str = '@' if color=='black' else 'O'
 	while(True):
 		print(human_game)
-		move = input("Please type a move:")
+		move = input("Please type a move ("+color_str+") :")
 		if(game.cell_color(move_to_cell(move))==game.PLAYERS["none"]):
 			print("valid (move was played)")
 			game.play(move_to_cell(move))
