@@ -1,4 +1,5 @@
-Server for playing Kriegspiel Hex. Kriegspiel Hex is a hex variant where the opponents moves are invisible unless we try to play a move in the same cell. Players are alerted of invalid moves and may continue playing moves until they pick a valid one.
+Server for playing Kriegspiel Hex. Kriegspiel Hex is a hex variant where the opponents moves are invisible unless we try to play a move in the same cell. Players are alerted of invalid moves and may continue playing moves until they pick a valid one. Throughout the convention that black plays first and white second is used.
+
 
 Referee
 =======
@@ -12,6 +13,7 @@ player1 and player2 must be two programs able to communicate with the server thr
 
 -t of --time specifies the time available for each player to make each move. Note that only successful moves (i.e. which do not intersect with a played opponent stone) will be counted so care must be taken to avoid timeout in the case of moves to occupied cells. Currently any timeout will result in a win for the other player.
 
+
 Human v.s. Program
 ==================
 The file human_vs.py implements a simple referee for playing against a program as a human, humans are not currently subject to time constrains when using this script and time constraints for programs are not enforced.
@@ -20,6 +22,8 @@ To play against a funcitoning agent as a human use a command like:
 
 python3 human_vs.py --b 8 -t 5 example_agent/example_program.py
 
+
+
 Example Agent
 =============
 The file example_agent contains an implementation of an agent capable of playing a game using this server. This agent is simply a monte carlo tree search agent for playing ordinary hex which is not even aware it is actually playing KHex (failed moves result in reset of tree to add in the now known opponent cell location). This agent is meant to be a minimal demonstration of a functioning player only and does not represent a recommended strategy. example_agent/example_program.py is the program to run associated with this agent, for example:
@@ -27,6 +31,36 @@ The file example_agent contains an implementation of an agent capable of playing
 python3 referee.py example_agent/example_program.py example_agent/example_program.py -b 3 -t 1
 
 will run a short 3by3 game between two example_agents.
+
+
+Tournament Client Server
+========================
+The files tournament_client.py and tournament_server.py implement a client server system for hosting and joining computer KHex tournaments.
+
+The tournament_server takes a command like the following:
+python3 tournament_server.py 2 5 -p 4242 -b 3 -t 2
+
+First argument is the number of agents to wait for before starting the tournament, second argument is the number of games to play with each agent as each color (so above would play 10 games total between two agents, each playing 5 games as each color).
+
+-p or --port optionally specifies the port for connecting to the server, arbitrarily set to 1235 by default, should be set to some 4 digit number.
+
+-b and -t work exactly as above to set boardsize and time per move
+
+The server will initially print an address like "uws120097usr.uws.ualberta.ca:4242" which includes a hostname and port number needed by the client for connecting to the server.
+
+The tournament_client takes a command like the following:
+python3 tournament_client.py uws120097usr.uws.ualberta.ca 4242 example_agent/example_program.py
+
+The first two arguments are the hostname and port number printed by the server, the last is a directory containing a single Khex agent executable to connect to the tournament. For the purposes of the tournament agents are identified by their name, so each agent should have a unique name (see GTP implementation below). If two agents have the same name one will have the letter I appended to the end until all names are unique.
+
+The tournament_server will wait until the specified number of clients have connected to begin, at which point it will begin running the tournament, after each game a table of stats will be printed showing win/loss rate for each player as each color. The format of the table is such that black agents are listed on the left, white agents are listed along the top and each entry looks like "wins,loses" for the black agent in that specific matchup e.g.:
+
+          barhex    foohex  
+barhex    xxxxxxxx  5, 1     
+foohex    2, 3      xxxxxxxx 
+ 
+Here barhex has won 5 games as black against foohex and lost 1, while foohex has won 2 games as black against barhex and lost 3.
+
 
 GTP Implementation for Players
 ==============================
@@ -37,6 +71,8 @@ set_time <int>: set the time available per move in seconds
 genmove <white/black>: respond with a move for the passed player (e.g. g5)
 occupied: indicates that the last move returned by genmove is already occupied, respond with another move
 valid: indicates that the last move returned by genmove was valid and has been played
+
+To interact with the client/server for tournaments it is additionally nessesary to implement "name" which should respond with a unique (in the tournament) identifier of your agent.
 
 Successful responses should be formatted as follows:
 

@@ -15,7 +15,7 @@ class web_agent:
 	"""
 	def __init__(self, client):
 		self.client = client
-		self.name = self.sendCommand("name")
+		self.name = self.sendCommand("name").strip()
 
 	def sendCommand(self, command):
 		totalsent = 0
@@ -60,10 +60,19 @@ def move_to_cell(move):
 	y = int(move[1:])-1
 	return (x,y)
 
+def make_names_unique(clients):
+	for client_1 in clients:
+		for client_2 in clients:
+			if(client_1 != client_2 and client_1.name == client_2.name):
+				client_2.name = client_2.name+"I"
+
+
 def run_game(blackAgent, whiteAgent, boardsize, time):
 	game = gamestate(boardsize)
 	winner = None
 	timeout = False
+	blackAgent.sendCommand("clear_board")
+	whiteAgent.sendCommand("clear_board")
 	while(True):
 		t = moveThread(game, blackAgent, "black")
 		t.start()
@@ -98,25 +107,28 @@ class win_stats:
 		for client_1 in clients:
 			for client_2 in clients:
 				if(client_1!=client_2):
-					if(not self.stats[client_1.name]):
+					if(not client_1.name in self.stats):
 						self.stats[client_1.name] = {}
-					self.stats[client_1.name][client_2.name] = (0,0)
+					self.stats[client_1.name][client_2.name] = [0,0]
 
 	def print_stats(self):
 		agents = self.stats.keys()
-		entry_size = max(max([len(x) for x in agents]),8)
-		print(" "*entry_size)
+		entry_size = max(max([len(x) for x in agents])+2,8)
+		print(" "*entry_size, end="")
 		for agent in agents:
-			print(agent+" "*(entry_size-len(agent)))
+			print(agent+" "*(entry_size-len(agent)), end="")
+		print()
 		for agent1 in agents:
-			print(agent1+" "*(entry_size-len(agent)))
+			print(agent1+" "*(entry_size-len(agent1)), end="")
 			for agent2 in agents:
 				if(agent1!=agent2):
-					win_lose = self.stats[agent1][agent2]
+					win_lose = self.stats[agent2][agent1]
 					entry = str(win_lose[0])+", "+str(win_lose[1])
 				else:
-					entry = ' '+'x'*(entry_size-2)+' '
-				print(entry+" "*(entry_size-len(entry)))
+					entry = 'x'*(entry_size-2)+'  '
+				print(entry+" "*(entry_size-len(entry)),end="")
+			print()
+
 
 	def add_outcome(self, blackAgent, whiteAgent, winner):
 		if(not (self.stats[blackAgent.name] and self.stats[blackAgent.name][whiteAgent.name])):
@@ -170,14 +182,20 @@ while len(clients)<num_clients:
     (clientsocket, address) = serversocket.accept()
     clients.append(web_agent(clientsocket))
 
+print("Client quota reached, starting tournament...")
+for client in clients:
+	client.sendCommand("boardsize "+str(boardsize))
+	client.sendCommand("set_time "+str(time))
+
 #win_stats[client_1][client_2] = (number of client_1 wins as black against client_2, number of client_1 losses as black against client_2)
+make_names_unique(clients)
 stats = win_stats(clients)
 
 
 for game in range(num_games):
 	for client_1 in clients:
 		for client_2 in clients:
-			if(client_1!=client_2):
+			if(client_1.name!=client_2.name):
 				winner = run_game(client_1, client_2, boardsize, time)
 				stats.add_outcome(client_1, client_2, winner)
 				stats.print_stats()
