@@ -3,6 +3,7 @@ from program import Program
 import threading
 import time
 from gamestate import gamestate
+import sys
 
 def make_valid_move(game, agent, color):
 	move = agent.sendCommand("genmove "+color)
@@ -61,6 +62,7 @@ def run_game(blackAgent, whiteAgent, boardsize, time):
 		if(game.winner() != game.PLAYERS["none"]):
 			winner = game.winner()
 			break
+		sys.stdout.flush()
 		t = moveThread(game, whiteAgent, "white")
 		t.start()
 		t.join(time+0.5)
@@ -72,6 +74,7 @@ def run_game(blackAgent, whiteAgent, boardsize, time):
 		if(game.winner() != game.PLAYERS["none"]):
 			winner = game.winner()
 			break
+		sys.stdout.flush()
 	winner_name = blackAgent.name if winner == game.PLAYERS["white"] else whiteAgent.name
 	print("Game over, " + winner_name+ " ("+game.PLAYER_STR[winner]+") " + "wins" + (" by timeout." if timeout else "."))
 	print(game)
@@ -142,7 +145,7 @@ with open(client_list) as f:
 clients = []
 for exe in client_exes:
 	clients.append(agent(Program(exe, True)))
-	
+
 if(len(clients)<2):
 	print('Need at least two programs for a tournament')
 	exit(1)
@@ -165,6 +168,7 @@ for game in range(num_games):
 				winner = run_game(client_1, client_2, boardsize, time)
 				stats.add_outcome(client_1, client_2, winner)
 				stats.print_stats()
+				sys.stdout.flush()
 print("Tournament Complete")
 print("Final win statistics:")
 stats.print_stats()

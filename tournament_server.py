@@ -3,6 +3,7 @@ import socket
 import threading
 import time
 from gamestate import gamestate
+import sys
 """
 Some socket code taken from https://docs.python.org/2/howto/sockets.html, authored by Gordon McMillan."
 """
@@ -84,6 +85,7 @@ def run_game(blackAgent, whiteAgent, boardsize, time):
 		if(game.winner() != game.PLAYERS["none"]):
 			winner = game.winner()
 			break
+		sys.stdout.flush()
 		t = moveThread(game, whiteAgent, "white")
 		t.start()
 		t.join(time+0.5)
@@ -95,6 +97,7 @@ def run_game(blackAgent, whiteAgent, boardsize, time):
 		if(game.winner() != game.PLAYERS["none"]):
 			winner = game.winner()
 			break
+		sys.stdout.flush()
 	winner_name = blackAgent.name if winner == game.PLAYERS["white"] else whiteAgent.name
 	print("Game over, " + winner_name+ " ("+game.PLAYER_STR[winner]+") " + "wins" + (" by timeout." if timeout else "."))
 	print(game)
@@ -198,6 +201,7 @@ for game in range(num_games):
 				winner = run_game(client_1, client_2, boardsize, time)
 				stats.add_outcome(client_1, client_2, winner)
 				stats.print_stats()
+				sys.stdout.flush()
 print("Tournament Complete")
 print("Final win statistics:")
 stats.print_stats()
