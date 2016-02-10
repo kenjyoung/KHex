@@ -57,9 +57,22 @@ The tournament_server will wait until the specified number of clients have conne
 
           barhex    foohex  
 barhex    xxxxxxxx  5, 1     
-foohex    2, 3      xxxxxxxx 
+foohex    2, 4      xxxxxxxx 
  
-Here barhex has won 5 games as black against foohex and lost 1, while foohex has won 2 games as black against barhex and lost 3.
+Here barhex has won 5 games as black against foohex and lost 1, while foohex has won 2 games as black against barhex and lost 4.
+
+Local Tournament
+================
+The file local_tournament.py runs a tournament with agents installed and running on the same machine (could be an issue if agents require a large amount of memory or try to ponder during opponent moves).
+
+A local tournament can be run as follows:
+python3 local_tournament.py example_agent_list.txt 3 -b 3 -t 2
+
+The first argument is a file containing a newline seperated list of executable paths for player agent, second argument is again the number of games to play with each agent as each color. -b and -t arguments are as described above.
+
+Everything else works the same as in the client server version described above.
+
+The above command with the included example_agent_list.txt will run a tournament with 3 copies of example_program.py where each plays 3 games as each color against each other agent, the boardsize is 3 and the time per move is 2.
 
 
 GTP Implementation for Players

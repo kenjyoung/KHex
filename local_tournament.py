@@ -1,38 +1,8 @@
 import argparse
-import socket
+from program import Program
 import threading
 import time
 from gamestate import gamestate
-"""
-Some socket code taken from https://docs.python.org/2/howto/sockets.html, authored by Gordon McMillan."
-"""
-
-class web_agent:
-	"""
-	Provide an interface to a socket connected to a Khex agent 
-	which looks like an ordinary Khex agent.
-	"""
-	def __init__(self, client):
-		self.client = client
-		self.name = self.sendCommand("name").strip()
-
-	def sendCommand(self, command):
-		totalsent = 0
-		while totalsent < len(command):
-			sent = self.client.send(bytes(command[totalsent:],'UTF-8'))
-			if sent == 0:
-				raise RuntimeError("client disconnected")
-			totalsent += sent
-		command = ''
-		bytes_recd = 0
-		while True:
-		    chunk=self.client.recv(2048)
-		    if chunk == b'':
-		        raise RuntimeError("client disconnected")
-		    command+=chunk.decode('UTF-8')
-		    if(chunk[-1]!='\n'):
-		    	break
-		return command
 
 def make_valid_move(game, agent, color):
 	move = agent.sendCommand("genmove "+color)
@@ -52,6 +22,13 @@ class moveThread(threading.Thread):
 		self.color = color
 	def run(self):
 		make_valid_move(self.game, self.agent, self.color)
+
+class agent:
+	def __init__(self, program):
+		self.name = program.sendCommand("name").strip()
+		self.program = program
+	def sendCommand(self, command):
+		return self.program.sendCommand(command)
 
 
 def move_to_cell(move):
@@ -140,11 +117,10 @@ class win_stats:
 			self.stats[blackAgent.name][whiteAgent.name][1]+=1
 
 parser = argparse.ArgumentParser(description="Server for running a tournament between several Khex clients.")
-parser.add_argument("num_clients", type=int, help="number of agents in tournament.")
+parser.add_argument("client_list", type=str, help="file containing newline seperated list of executable agents.")
 parser.add_argument("num_games", type=int, help="number of *pairs* of games (one as black, one as white) to play between each pair of agents.")
 parser.add_argument("--boardsize", "-b", type=int, help="side length of (square) board.")
 parser.add_argument("--time", "-t", type=int, help="total time allowed for each move in seconds.")
-parser.add_argument("--port", "-p", type=int, help="specify which port to open socket on.")
 args = parser.parse_args()
 
 if args.boardsize:
@@ -157,29 +133,20 @@ if args.time:
 else:
 	time = 10
 
-if args.port:
-	port = args.port
-else:
-	port = 1235
-
-num_clients = args.num_clients
-if(num_clients<2):
-	print('Need at least two programs for a tournament')
-	exit(1)
+client_list = args.client_list
 num_games = args.num_games
 
-serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-address = socket.gethostname()
-serversocket.bind((address, port))
+with open(client_list) as f:
+	client_exes = f.readlines()
 
-clients=[]
+clients = []
+for exe in client_exes:
+	clients.append(agent(Program(exe, True)))
+	
+if(len(clients)<2):
+	print('Need at least two programs for a tournament')
+	exit(1)
 
-serversocket.listen(5)
-print("server address: "+str(socket.gethostname())+":"+str(port))
-
-while len(clients)<num_clients:
-    (clientsocket, address) = serversocket.accept()
-    clients.append(web_agent(clientsocket))
 
 print("Client quota reached, starting tournament...")
 for client in clients:
