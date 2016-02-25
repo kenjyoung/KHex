@@ -45,7 +45,7 @@ serversocket.bind((address, port))
 clients=[]
 
 serversocket.listen(5)
-print("server address: "+str(socket.gethostname())+":"+str(port))
+print("server address: "+socket.gethostbyname(socket.gethostname())+":"+str(port))
 
 while len(clients)<num_clients:
     (clientsocket, address) = serversocket.accept()

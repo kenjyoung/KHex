@@ -150,7 +150,7 @@ class win_stats:
 					win_lose2 = self.stats[agent1][agent2]
 					wins = win_lose1[0]+win_lose2[1]
 					loses = win_lose1[1]+win_lose2[0]
-					entry = str(wins/float(wins+loses)*100)+"%"
+					entry = str(wins/float(wins+loses)*100)[0:5]+"%"
 				else:
 					entry = 'x'*(entry_size-2)+'  '
 				print(entry+" "*(entry_size-len(entry)),end="")

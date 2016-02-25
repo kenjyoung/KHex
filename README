@@ -46,12 +46,12 @@ First argument is the number of agents to wait for before starting the tournamen
 
 -b and -t work exactly as above to set boardsize and time per move
 
-The server will initially print an address like "uws120097usr.uws.ualberta.ca:4242" which includes a hostname and port number needed by the client for connecting to the server.
+The server will initially print an address like "192.168.0.1:4242" which includes a hostname and port number needed by the client for connecting to the server.
 
 The tournament_client takes a command like the following:
-python3 tournament_client.py uws120097usr.uws.ualberta.ca 4242 example_agent/example_program.py
+python3 tournament_client.py 192.168.0.1 4242 example_agent/example_program.py
 
-The first two arguments are the hostname and port number printed by the server, the last is a directory containing a single Khex agent executable to connect to the tournament. For the purposes of the tournament agents are identified by their name, so each agent should have a unique name (see GTP implementation below). If two agents have the same name one will have the letter I appended to the end until all names are unique.
+The first two arguments are the host address and port number printed by the server, the last is a directory containing a single Khex agent executable to connect to the tournament. For the purposes of the tournament agents are identified by their name, so each agent should have a unique name (see GTP implementation below). If two agents have the same name one will have the letter I appended to the end until all names are unique.
 
 The tournament_server will wait until the specified number of clients have connected to begin, at which point it will begin running the tournament, after each game a table of stats will be printed showing win/loss rate for each player as each color. The format of the table is such that black agents are listed on the left, white agents are listed along the top and each entry looks like "wins,loses" for the black agent in that specific matchup e.g.:
 
