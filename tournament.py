@@ -14,6 +14,7 @@ def make_valid_move(game, agent, color):
 			break
 		else:
 			move = agent.sendCommand("occupied")
+	return move
 
 class moveThread(threading.Thread):
 	def __init__(self, game, agent, color):
@@ -21,8 +22,9 @@ class moveThread(threading.Thread):
 		self.game = game
 		self.agent = agent
 		self.color = color
+		self.move = "x"
 	def run(self):
-		make_valid_move(self.game, self.agent, self.color)
+		self.move = make_valid_move(self.game, self.agent, self.color).strip()
 
 class agent:
 	def __init__(self, program):
@@ -75,12 +77,14 @@ def run_game(blackAgent, whiteAgent, boardsize, time):
 	game = gamestate(boardsize)
 	winner = None
 	timeout = False
+	moves = []
 	blackAgent.sendCommand("clear_board")
 	whiteAgent.sendCommand("clear_board")
 	while(True):
 		t = moveThread(game, blackAgent, "black")
 		t.start()
 		t.join(time+0.5)
+		moves.append(t.move)
 		#if black times out white wins
 		if(t.isAlive()):
 			timeout = True
@@ -93,6 +97,7 @@ def run_game(blackAgent, whiteAgent, boardsize, time):
 		t = moveThread(game, whiteAgent, "white")
 		t.start()
 		t.join(time+0.5)
+		moves.append(t.move)
 		#if white times out black wins
 		if(t.isAlive()):
 			timeout = True
@@ -105,6 +110,7 @@ def run_game(blackAgent, whiteAgent, boardsize, time):
 	winner_name = blackAgent.name if winner == game.PLAYERS["white"] else whiteAgent.name
 	print("Game over, " + winner_name+ " ("+game.PLAYER_STR[winner]+") " + "wins" + (" by timeout." if timeout else "."))
 	print(game)
+	print(" ".join(moves))
 	return winner
 
 class win_stats:

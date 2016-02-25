@@ -72,4 +72,5 @@ for game in range(num_games):
 print("Tournament Complete")
 print("Final win statistics:")
 stats.print_stats()
+print()
 stats.print_winrate()
