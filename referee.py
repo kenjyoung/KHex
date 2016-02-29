@@ -14,6 +14,7 @@ def make_valid_move(game, agent, color):
 			break
 		else:
 			move = agent.sendCommand("occupied")
+	return move
 
 class moveThread(threading.Thread):
 	def __init__(self, game, agent, color):
@@ -21,8 +22,9 @@ class moveThread(threading.Thread):
 		self.game = game
 		self.agent = agent
 		self.color = color
+		self.move = "x"
 	def run(self):
-		make_valid_move(self.game, self.agent, self.color)
+		self.move = make_valid_move(self.game, self.agent, self.color).strip()
 
 
 def move_to_cell(move):
@@ -35,6 +37,9 @@ parser.add_argument("program1", type=str, help="first (black) player executable"
 parser.add_argument("program2", type=str, help="second (white) player executable")
 parser.add_argument("--boardsize", "-b", type=int, help="side length of (square) board.")
 parser.add_argument("--time", "-t", type=int, help="total time allowed for each move in seconds.")
+parser.add_argument("--verbose", "-v", dest="verbose", action='store_const',
+					const=True, default=False,
+					help="print board after each move.")
 args = parser.parse_args()
 
 if args.boardsize:
@@ -57,10 +62,14 @@ whiteAgent.sendCommand("set_time "+str(time))
 game = gamestate(boardsize)
 winner = None
 timeout = False
+moves = []
 while(True):
 	t = moveThread(game, blackAgent, "black")
 	t.start()
 	t.join(time+0.5)
+	moves.append(t.move)
+	if args.verbose:
+		print(game)
 	#if black times out white wins
 	if(t.isAlive()):
 		timeout = True
@@ -72,6 +81,9 @@ while(True):
 	t = moveThread(game, whiteAgent, "white")
 	t.start()
 	t.join(time+0.5)
+	moves.append(t.move)
+	if args.verbose:
+		print(game)
 	#if white times out black wins
 	if(t.isAlive()):
 		timeout = True
@@ -83,5 +95,6 @@ while(True):
 
 print("Game over, " + game.PLAYER_STR[winner] + " wins" + (" by timeout." if timeout else "."))
 print(game)
+print(" ".join(moves))
 
 

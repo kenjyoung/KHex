@@ -14,6 +14,7 @@ def make_valid_move(game, agent, color):
 			break
 		else:
 			move = agent.sendCommand("occupied")
+	return move
 def get_human_move(game, human_game, color):
 	human_game.set_turn(game.PLAYERS[color])
 	color_str = '@' if color=='black' else 'O'
@@ -29,6 +30,7 @@ def get_human_move(game, human_game, color):
 			print("cell occupied (try another move)")
 			opponent = game.OPPONENT[game.turn()]
 			human_game.place(opponent, move_to_cell(move))
+	return move
 			
 
 def move_to_cell(move):
@@ -62,27 +64,28 @@ agent.sendCommand("set_time "+str(time))
 human_game = gamestate(boardsize)
 game = gamestate(boardsize)
 winner = None
+moves = []
 
 while(True):
 	if(args.first):
-		get_human_move(game, human_game, "black")
+		moves.append(get_human_move(game, human_game, "black"))
 		if(game.winner() != game.PLAYERS["none"]):
 			winner = game.winner()
 			break
 		print("waiting for opponent...")
-		make_valid_move(game, agent, "white")
+		moves.append(make_valid_move(game, agent, "white")).strip()
 		print("done")
 		if(game.winner() != game.PLAYERS["none"]):
 			winner = game.winner()
 			break
 	else:
 		print("waiting for opponent...")
-		make_valid_move(game, agent, "black")
+		moves.append(make_valid_move(game, agent, "black")).strip()
 		print("done")
 		if(game.winner() != game.PLAYERS["none"]):
 			winner = game.winner()
 			break
-		get_human_move(game, human_game, "white")
+		moves.append(get_human_move(game, human_game, "white"))
 		if(game.winner() != game.PLAYERS["none"]):
 			winner = game.winner()
 			break
@@ -90,5 +93,6 @@ while(True):
 
 print("Game over, " + game.PLAYER_STR[winner]+" wins.")
 print(game)
+print(" ".join(moves))
 
 
