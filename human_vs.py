@@ -21,15 +21,19 @@ def get_human_move(game, human_game, color):
 	while(True):
 		print(human_game)
 		move = input("Please type a move ("+color_str+") :")
-		if(game.cell_color(move_to_cell(move))==game.PLAYERS["none"]):
-			print("valid (move was played)")
-			game.play(move_to_cell(move))
-			human_game.play(move_to_cell(move))
-			break
-		else:
-			print("cell occupied (try another move)")
-			opponent = game.OPPONENT[game.turn()]
-			human_game.place(opponent, move_to_cell(move))
+		try:
+			if(game.cell_color(move_to_cell(move))==game.PLAYERS["none"]):
+				print("valid (move was played)")
+				game.play(move_to_cell(move))
+				human_game.play(move_to_cell(move))
+				break
+			else:
+				print("cell occupied (try another move)")
+				opponent = game.OPPONENT[game.turn()]
+				human_game.place(opponent, move_to_cell(move))
+		except (ValueError, IndexError):
+			print("Invalid input, please try again")
+
 	return move
 			
 
