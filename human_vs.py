@@ -73,14 +73,14 @@ while(True):
 			winner = game.winner()
 			break
 		print("waiting for opponent...")
-		moves.append(make_valid_move(game, agent, "white")).strip()
+		moves.append(make_valid_move(game, agent, "white").strip())
 		print("done")
 		if(game.winner() != game.PLAYERS["none"]):
 			winner = game.winner()
 			break
 	else:
 		print("waiting for opponent...")
-		moves.append(make_valid_move(game, agent, "black")).strip()
+		moves.append(make_valid_move(game, agent, "black").strip())
 		print("done")
 		if(game.winner() != game.PLAYERS["none"]):
 			winner = game.winner()
