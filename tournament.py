@@ -35,7 +35,7 @@ class agent:
 
 class web_agent:
 	"""
-	Provide an interface to a socket connected to a Khex agent 
+	Provide an interface to a socket connected to a Khex agent
 	which looks like an ordinary Khex agent.
 	"""
 	def __init__(self, client):
@@ -107,7 +107,7 @@ def run_game(blackAgent, whiteAgent, boardsize, time):
 			winner = game.winner()
 			break
 		sys.stdout.flush()
-	winner_name = blackAgent.name if winner == game.PLAYERS["white"] else whiteAgent.name
+	winner_name = blackAgent.name if winner == game.PLAYERS["black"] else whiteAgent.name
 	print("Game over, " + winner_name+ " ("+game.PLAYER_STR[winner]+") " + "wins" + (" by timeout." if timeout else "."))
 	print(game)
 	print(" ".join(moves))
