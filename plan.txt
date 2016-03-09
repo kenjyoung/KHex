@@ -1,1 +1,0 @@
--client server architecture: server will take how many clients to expect as an argument, server and client will communicate directly in gtp (server sends gtp messages to client and recieves unmodified response)

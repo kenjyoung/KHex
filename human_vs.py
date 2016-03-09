@@ -33,7 +33,6 @@ def get_human_move(game, human_game, color):
 				human_game.place(opponent, move_to_cell(move))
 		except (ValueError, IndexError):
 			print("Invalid input, please try again")
-
 	return move
 			
 
