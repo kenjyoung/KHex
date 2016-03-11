@@ -134,7 +134,7 @@ class win_stats:
 			print(agent1+" "*(entry_size-len(agent1)), end="")
 			for agent2 in agents:
 				if(agent1!=agent2):
-					win_lose = self.stats[agent2][agent1]
+					win_lose = self.stats[agent1][agent2]
 					entry = str(win_lose[0])+", "+str(win_lose[1])
 				else:
 					entry = 'x'*(entry_size-2)+'  '
@@ -152,8 +152,8 @@ class win_stats:
 			print(agent1+" "*(entry_size-len(agent1)), end="")
 			for agent2 in agents:
 				if(agent1!=agent2):
-					win_lose1 = self.stats[agent2][agent1]
-					win_lose2 = self.stats[agent1][agent2]
+					win_lose1 = self.stats[agent1][agent2]
+					win_lose2 = self.stats[agent2][agent1]
 					wins = win_lose1[0]+win_lose2[1]
 					loses = win_lose1[1]+win_lose2[0]
 					entry = str(wins/float(wins+loses)*100)[0:5]+"%"
