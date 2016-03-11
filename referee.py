@@ -4,49 +4,7 @@ import argparse
 import threading
 import time
 from gamestate import gamestate
-
-def make_valid_move(game, agent, color, timeout_flag):
-	move = agent.sendCommand("genmove "+color)
-	if(timeout_flag[0]):
-		return move
-	while(True):
-		if(game.cell_color(move_to_cell(move))==game.PLAYERS["none"]):
-			agent.sendCommand("valid")
-			game.play(move_to_cell(move))
-			break
-		else:
-			move = agent.sendCommand("occupied")
-			if(timeout_flag[0]):
-				break
-	return move
-
-class moveThread(threading.Thread):
-	def __init__(self, game, agent, color):
-		threading.Thread.__init__(self)
-		self.game = game
-		self.agent = agent
-		self.color = color
-		self.move = "x"
-		self.timeout_flag = [False]
-	def run(self):
-		self.move = make_valid_move(self.game, self.agent, self.color, self.timeout_flag).strip()
-
-
-def move_to_cell(move):
-	x =	ord(move[0].lower())-ord('a')
-	y = int(move[1:])-1
-	return (x,y)
-
-class agent:
-	def __init__(self, program):
-		self.name = program.sendCommand("name").strip()
-		self.program = program
-		self.lock  = threading.Lock()
-	def sendCommand(self, command):
-		self.lock.acquire()
-		answer = self.program.sendCommand(command)
-		self.lock.release()
-		return answer
+from tournament import *
 
 parser = argparse.ArgumentParser(description="Referee a game of Kriegspiel Hex between two executable agents.")
 parser.add_argument("program1", type=str, help="first (black) player executable")
@@ -75,44 +33,4 @@ whiteAgent.sendCommand("boardsize "+str(boardsize))
 blackAgent.sendCommand("set_time "+str(time))
 whiteAgent.sendCommand("set_time "+str(time))
 
-game = gamestate(boardsize)
-winner = None
-timeout = False
-moves = []
-while(True):
-	t = moveThread(game, blackAgent, "black")
-	t.start()
-	t.join(time+0.5)
-	moves.append(t.move)
-	if args.verbose:
-		print(game)
-	#if black times out white wins
-	if(t.isAlive()):
-		timeout = True
-		t.timeout_flag[0] = True
-		winner = game.PLAYERS["white"]
-		break
-	if(game.winner() != game.PLAYERS["none"]):
-		winner = game.winner()
-		break
-	t = moveThread(game, whiteAgent, "white")
-	t.start()
-	t.join(time+0.5)
-	moves.append(t.move)
-	if args.verbose:
-		print(game)
-	#if white times out black wins
-	if(t.isAlive()):
-		timeout = True
-		t.timeout_flag[0] = True
-		winner = game.PLAYERS["black"]
-		break
-	if(game.winner() != game.PLAYERS["none"]):
-		winner = game.winner()
-		break
-
-print("Game over, " + game.PLAYER_STR[winner] + " wins" + (" by timeout." if timeout else "."))
-print(game)
-print(" ".join(moves))
-
-
+run_game(blackAgent, whiteAgent, boardsize, time, args.verbose)

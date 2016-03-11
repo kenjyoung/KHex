@@ -88,7 +88,7 @@ def make_names_unique(clients):
 				client_2.name = client_2.name+"I"
 
 
-def run_game(blackAgent, whiteAgent, boardsize, time):
+def run_game(blackAgent, whiteAgent, boardsize, time, verbose = False):
 	game = gamestate(boardsize)
 	winner = None
 	timeout = False
@@ -100,6 +100,8 @@ def run_game(blackAgent, whiteAgent, boardsize, time):
 		t.start()
 		t.join(time+0.5)
 		moves.append(t.move)
+		if verbose:
+			print(game)
 		#if black times out white wins
 		if(t.isAlive()):
 			timeout = True
@@ -114,6 +116,8 @@ def run_game(blackAgent, whiteAgent, boardsize, time):
 		t.start()
 		t.join(time+0.5)
 		moves.append(t.move)
+		if verbose:
+			print(game)
 		#if white times out black wins
 		if(t.isAlive()):
 			timeout = True
