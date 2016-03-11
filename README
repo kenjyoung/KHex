@@ -59,7 +59,15 @@ The tournament_server will wait until the specified number of clients have conne
 barhex    xxxxxxxx  5, 1     
 foohex    2, 4      xxxxxxxx 
  
-Here barhex has won 5 games as black against foohex and lost 1, while foohex has won 2 games as black against barhex and lost 4.
+Here barhex has won 5 games as black against foohex and lost 1, while foohex has won 2 games as black against barhex and lost 4. 
+
+In addition at the end of a tournament a table showing the overall winrate (including games as both black and white) for each agent will be printed. i.e. for the above set of games this would be something like:
+
+          barhex    foohex  
+barhex    xxxxxxxx  75%   
+foohex    25%       xxxxxxxx 
+
+Indicating foohex has won 75% of all its games against barhex and barhex has won 25% of its games against foohex.
 
 Local Tournament
 ================
