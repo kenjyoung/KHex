@@ -1,2 +1,2 @@
 example_agent/example_program.py
-example_agent/bad_program.py
+example_agent/example_program.py
