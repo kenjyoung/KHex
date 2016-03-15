@@ -58,12 +58,18 @@ class Program:
         answer = ""
         done = 0
         numberLines = 0
+        first = True
         while not done:
             line = self._stdout.readline()
             if line == "":
                 self._programDied()
             if self._verbose:
                 sys.stdout.write("> " + line)
+            if first:
+                if not (line[0]=="=" or line[0]=="?"):
+                    continue
+                else:
+                    first = False
             numberLines += 1
             done = (line == "\n")
             if not done:
