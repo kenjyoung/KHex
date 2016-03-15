@@ -85,15 +85,15 @@ The above command with the included example_agent_list.txt will run a tournament
 
 GTP Implementation for Players
 ==============================
-Currently the minimum set of gtp commands an agent must implement to interact with the referee is as follows:
+Currently the minimum set of gtp commands an agent must implement to interact with the referee and tournament scripts is as follows:
 
 boardsize <int>: set the width of the game board
 set_time <int>: set the time available per move in seconds
 genmove <white/black>: respond with a move for the passed player (e.g. g5)
 occupied: indicates that the last move returned by genmove is already occupied, respond with another move
+clear_board: reset the game to the starting state with the same boardsize
 valid: indicates that the last move returned by genmove was valid and has been played
-
-To interact with the client/server for tournaments it is additionally nessesary to implement "name" which should respond with a unique (in the tournament) identifier of your agent.
+name: unique string identifying your agent
 
 Successful responses should be formatted as follows:
 
