@@ -11,6 +11,9 @@ parser.add_argument("client_list", type=str, help="file containing newline seper
 parser.add_argument("num_games", type=int, help="number of *pairs* of games (one as black, one as white) to play between each pair of agents.")
 parser.add_argument("--boardsize", "-b", type=int, help="side length of (square) board.")
 parser.add_argument("--time", "-t", type=int, help="total time allowed for each move in seconds.")
+parser.add_argument("--verbose", "-v", dest="verbose", action='store_const',
+					const=True, default=False,
+					help="print board after each move.")
 args = parser.parse_args()
 
 if args.boardsize:
@@ -52,7 +55,7 @@ for game in range(num_games):
 	for client_1 in clients:
 		for client_2 in clients:
 			if(client_1.name!=client_2.name):
-				winner = run_game(client_1, client_2, boardsize, time)
+				winner = run_game(client_1, client_2, boardsize, time, args.verbose)
 				stats.add_outcome(client_1, client_2, winner)
 				stats.print_stats()
 				sys.stdout.flush()
