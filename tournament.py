@@ -29,12 +29,16 @@ class moveThread(threading.Thread):
 		self.move = "x"
 		self.timeout_flag = [False]
 	def run(self):
-		self.move = make_valid_move(self.game, self.agent, self.color, self.timeout_flag).strip()
+		try:
+			self.move = make_valid_move(self.game, self.agent, self.color, self.timeout_flag).strip()
+		except Program.Died:
+			pass
 
 class agent:
-	def __init__(self, program):
-		self.name = program.sendCommand("name").strip()
-		self.program = program
+	def __init__(self, exe):
+		self.exe = exe 
+		self.program = Program(self.exe, True)
+		self.name = self.program.sendCommand("name").strip()
 		self.lock  = threading.Lock()
 
 	def sendCommand(self, command):
@@ -42,6 +46,12 @@ class agent:
 		answer = self.program.sendCommand(command)
 		self.lock.release()
 		return answer
+
+	def reconnect(self):
+		self.program.terminate()
+		self.program = Program(self.exe,True)
+		self.lock = threading.Lock()
+
 
 class web_agent:
 	"""
@@ -74,6 +84,10 @@ class web_agent:
 		    	break
 		self.lock.release()
 		return command
+
+	def reconnect(self):
+		#defined for interface compatibility
+		pass
 
 
 def move_to_cell(move):
@@ -109,6 +123,9 @@ def run_game(blackAgent, whiteAgent, boardsize, time, verbose = False):
 			timeout = True
 			t.timeout_flag[0] = True
 			winner = game.PLAYERS["white"]
+			blackAgent.reconnect()
+			blackAgent.sendCommand("boardsize "+str(boardsize))
+			blackAgent.sendCommand("set_time "+str(time))
 			break
 		if(game.winner() != game.PLAYERS["none"]):
 			winner = game.winner()
@@ -126,6 +143,9 @@ def run_game(blackAgent, whiteAgent, boardsize, time, verbose = False):
 			timeout = True
 			t.timeout_flag[0] = True
 			winner = game.PLAYERS["black"]
+			whiteAgent.reconnect()
+			whiteAgent.sendCommand("boardsize "+str(boardsize))
+			whiteAgent.sendCommand("set_time "+str(time))
 			break
 		if(game.winner() != game.PLAYERS["none"]):
 			winner = game.winner()

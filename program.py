@@ -2,7 +2,7 @@
 # Opens connection to GTP program. 
 #----------------------------------------------------------------------------
 
-import string, os, sys, subprocess
+import string, os, sys, subprocess, signal
 from subprocess import Popen, PIPE
 
 #----------------------------------------------------------------------------
@@ -21,7 +21,8 @@ class Program:
             print ("Creating program: "+command)
         #self._stdin, self._stdout, self._stderr = subprocess.os.popen3(command)
         p = Popen(command, shell = True, stdin=PIPE, stdout=PIPE, 
-            stderr=PIPE, close_fds=True, universal_newlines=True)
+            stderr=PIPE, close_fds=True, universal_newlines=True, preexec_fn=os.setsid)
+        self._pid = p.pid
         self._stdin, self._stdout, self._stderr = (p.stdin, p.stdout, p.stderr)
         self._isDead = 0
 
@@ -84,3 +85,10 @@ class Program:
     def _programDied(self):
         self._isDead = 1
         raise Program.Died
+
+    def terminate(self):
+        try:
+            os.killpg(os.getpgid(self._pid), signal.SIGTERM)
+        except OSError:
+            pass
+

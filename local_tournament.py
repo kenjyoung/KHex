@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(description="Server for running a tournament be
 parser.add_argument("client_list", type=str, help="file containing newline seperated list of executable agents.")
 parser.add_argument("num_games", type=int, help="number of *pairs* of games (one as black, one as white) to play between each pair of agents.")
 parser.add_argument("--boardsize", "-b", type=int, help="side length of (square) board.")
-parser.add_argument("--time", "-t", type=int, help="total time allowed for each move in seconds.")
+parser.add_argument("--time", "-t", type=int, help="total time allowed for gitkeach move in seconds.")
 parser.add_argument("--verbose", "-v", dest="verbose", action='store_const',
 					const=True, default=False,
 					help="print board after each move.")
@@ -34,7 +34,7 @@ with open(client_list) as f:
 
 clients = []
 for exe in client_exes:
-	clients.append(agent(Program(exe, True)))
+	clients.append(agent(exe))
 
 if(len(clients)<2):
 	print('Need at least two programs for a tournament')
